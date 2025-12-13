@@ -8,7 +8,7 @@ const BackgroundGradient = () => (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {/* Blob 1 - Top Right - Pink/Rose */}
         <motion.div
-            className="absolute -top-[10%] -right-[10%] w-[70vw] h-[70vw] max-w-[800px] max-h-[800px] rounded-full bg-gradient-to-br from-[#F8B8BC] via-[#FA9898] to-[#BEE4BE] opacity-30 blur-3xl"
+            className="absolute -top-[10%] -right-[10%] w-[70vw] h-[70vw] max-w-[800px] max-h-[800px] rounded-full bg-gradient-to-br from-[#F8B8BC] via-[#FA9898] to-[#BEE4BE] opacity-30 blur-2xl md:blur-3xl will-change-transform"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.3 }}
             transition={{ duration: 2, ease: "easeOut" }}
@@ -17,7 +17,7 @@ const BackgroundGradient = () => (
 
         {/* Blob 2 - Middle Left - Orange/Yellow */}
         <motion.div
-            className="absolute top-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-tr from-[#FEF1C3] via-[#FBAF59] to-[#F86A1A] opacity-20 blur-3xl"
+            className="absolute top-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-tr from-[#FEF1C3] via-[#FBAF59] to-[#F86A1A] opacity-20 blur-2xl md:blur-3xl will-change-transform"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.2 }}
             transition={{ duration: 2, delay: 0.3, ease: "easeOut" }}
@@ -26,7 +26,7 @@ const BackgroundGradient = () => (
 
         {/* Blob 3 - Bottom Center - Teal/Purple */}
         <motion.div
-            className="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] max-w-[900px] max-h-[900px] rounded-full bg-gradient-to-t from-[#00CAE5] to-[#D068BB] opacity-20 blur-3xl"
+            className="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] max-w-[900px] max-h-[900px] rounded-full bg-gradient-to-t from-[#00CAE5] to-[#D068BB] opacity-20 blur-2xl md:blur-3xl will-change-transform"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.2 }}
             transition={{ duration: 2, delay: 0.6, ease: "easeOut" }}

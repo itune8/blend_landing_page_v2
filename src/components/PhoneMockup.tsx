@@ -51,19 +51,15 @@ const BackgroundCircle = () => (
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
     >
-        {/* Animated Gradient Ring */}
-        <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#1EBFAF] via-[#22d3ee] to-[#10b981] opacity-30 blur-2xl"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        />
+        {/* Standard Gradient Ring - Static to save GPU on mobile */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#1EBFAF] via-[#22d3ee] to-[#10b981] opacity-20 blur-xl" />
 
         {/* Main Circle - Image Background */}
-        <div className="relative w-[480px] h-[480px] rounded-full border border-white/5 shadow-2xl overflow-hidden flex items-center justify-center bg-black">
+        <div className="relative w-[480px] h-[480px] rounded-full border border-white/5 shadow-xl overflow-hidden flex items-center justify-center bg-black">
             <img
                 src="/blend_circle_bg.png"
                 alt="Background"
-                className="w-full h-full object-cover opacity-90 transition-transform duration-100"
+                className="w-full h-full object-cover opacity-90 transition-transform duration-100 will-change-transform"
                 style={{ transform: "scale(1.1) translate(28px, 40px) rotate(2deg)" }}
             />
             {/* Overlay to ensure phone pop */}
@@ -106,8 +102,8 @@ export function PhoneMockup() {
                 <motion.div
                     className="w-full h-full bg-[#0f1115] rounded-[3rem] border-[8px] border-[#2a2f3a] overflow-hidden relative"
                     animate={{
-                        y: [-15, 15, -15],
-                        rotateZ: [-1, 1, -1],
+                        y: [-10, 10, -10], // Reduced movement range for smoother feel
+                        rotateZ: [-0.5, 0.5, -0.5], // Reduced rotation
                     }}
                     transition={{
                         duration: 6,
@@ -115,9 +111,8 @@ export function PhoneMockup() {
                         ease: "easeInOut"
                     }}
                     style={{
-                        // Optimized shadow: smaller blur on mobile (default), larger on desktop via media queries not shown here but standardizing
-                        // We use a lighter static shadow for better performance than animating a complex box-shadow
-                        boxShadow: "0px 20px 40px rgba(0,0,0,0.4)",
+                        // Optimized shadow: Reduced blur from 80px to 40px, opacity from 0.4 to 0.3
+                        boxShadow: "20px 20px 50px rgba(0,0,0,0.3)",
                         transformStyle: "preserve-3d",
                         backfaceVisibility: "hidden",
                         willChange: "transform"

@@ -149,7 +149,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 20px rgba(30, 191, 175, 0.4));
+  filter: drop-shadow(0 0 8px rgba(30, 191, 175, 0.4));
 }
 
 /* Grid pattern for pricing page */
