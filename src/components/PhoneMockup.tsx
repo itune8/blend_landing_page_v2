@@ -46,24 +46,25 @@ const AvatarPile = ({ images }: { images: string[] }) => (
 // Background element with Blend branding
 const BackgroundCircle = () => (
     <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full -z-20 flex items-center justify-center"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full -z-20 flex items-center justify-center"
+        style={{ marginLeft: 71, marginTop: 0, scale: 1.15 }}
         initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
+        animate={{ opacity: 1, scale: 1.15 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
     >
         {/* Standard Gradient Ring - Static to save GPU on mobile */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#1EBFAF] via-[#22d3ee] to-[#10b981] opacity-20 blur-xl" />
 
         {/* Main Circle - Image Background */}
-        <div className="relative w-[480px] h-[480px] rounded-full border border-white/5 shadow-xl overflow-hidden flex items-center justify-center bg-black">
+        <div className="relative w-[540px] h-[540px] rounded-full border border-white/5 shadow-xl overflow-hidden flex items-center justify-center bg-black">
             <img
-                src="/blend_circle_bg.png"
+                src="/blend_day_crowd_flag_1765652216589.png"
                 alt="Background"
-                className="w-full h-full object-cover opacity-90 transition-transform duration-100 will-change-transform"
-                style={{ transform: "scale(1.1) translate(28px, 40px) rotate(2deg)" }}
+                className="w-full h-full object-cover opacity-80 transition-transform duration-100 will-change-transform"
+                style={{ transform: `scale(1.1) translate(0px, 0px) rotateZ(0deg) rotateX(0deg) rotateY(0deg)` }}
             />
             {/* Overlay to ensure phone pop */}
-            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 bg-black/30" />
         </div >
     </motion.div>
 )
@@ -80,23 +81,28 @@ export function PhoneMockup() {
     }, [])
 
     return (
-        <div className="relative w-full h-[800px] flex items-center justify-center overflow-visible" style={{ perspective: "1637px" }}>
+        <div className="relative w-full h-[800px] flex items-center justify-center overflow-visible ml-10" style={{ perspective: "1637px" }}>
 
             <BackgroundCircle />
 
             <motion.div
-                className="relative w-[300px] h-[600px] will-change-transform"
-                initial={{ opacity: 0, rotateZ: 14, rotateY: -22, rotateX: 14, x: 0, y: 0 }}
+                className="relative will-change-transform"
+                style={{
+                    width: 367,
+                    height: 675,
+                    transformStyle: "preserve-3d"
+                }}
+                initial={{ opacity: 0, rotateZ: 14, rotateY: -22, rotateX: 14, scale: 0.88, x: 52, y: 59 }}
                 animate={{
                     opacity: 1,
                     rotateZ: 14,
                     rotateY: -22,
                     rotateX: 14,
-                    x: 0,
-                    y: 0
+                    scale: 0.88,
+                    x: 52,
+                    y: 59
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                style={{ transformStyle: "preserve-3d" }}
             >
                 {/* Phone Container - Floating Animation */}
                 <motion.div
