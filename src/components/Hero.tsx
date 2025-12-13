@@ -3,70 +3,38 @@ import { Button } from "@/components/ui/button"
 import { PhoneMockup } from "@/components/PhoneMockup"
 
 // Animated background blobs (same as original Luma)
+// Animated background blobs (CSS version for performance)
 const BackgroundGradient = () => (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            preserveAspectRatio="none"
-            viewBox="0 0 1440 1045"
-            className="w-full h-full opacity-15"
-        >
-            <defs>
-                <linearGradient id="grad1" x1="1405.21" x2="1340.51" y1="-27.156" y2="959.445" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#F8B8BC" />
-                    <stop offset="0.338" stopColor="#FA9898" />
-                    <stop offset="1" stopColor="#BEE4BE" />
-                </linearGradient>
-                <linearGradient id="grad2" x1="657.092" x2="533.655" y1="-62.023" y2="1379.74" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FEF1C3" />
-                    <stop offset="0.338" stopColor="#FBAF59" />
-                    <stop offset="1" stopColor="#F86A1A" />
-                </linearGradient>
-                <linearGradient id="grad3" x1="-693.781" x2="194.39" y1="497.468" y2="1081.5" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#00CAE5" />
-                    <stop offset="1" stopColor="#D068BB" />
-                </linearGradient>
-                <filter id="blur1" width="2677" height="1641" x="-667" y="-221" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse">
-                    <feGaussianBlur stdDeviation="100" />
-                </filter>
-                <filter id="blur2" width="2830" height="2219" x="-1645" y="-253" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse">
-                    <feGaussianBlur stdDeviation="100" />
-                </filter>
-                <filter id="blur3" width="1458" height="2148" x="-892" y="-274" colorInterpolationFilters="sRGB" filterUnits="userSpaceOnUse">
-                    <feGaussianBlur stdDeviation="100" />
-                </filter>
-            </defs>
-            <g filter="url(#blur1)">
-                <motion.path
-                    fill="url(#grad1)"
-                    d="M574.024-14.844 1554.4-21c49.73 49.656-256.96 249.617 134.98 448.139 255.21 129.271 95.36 450.601-384.16 606.961-515.216 167.99-1728.23 153.95-1771.055 183.45l-.898 2.45c-.553-.85-.242-1.67.898-2.45L-12.068-21z"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                />
-            </g>
-            <g filter="url(#blur2)">
-                <motion.path
-                    fill="url(#grad2)"
-                    d="M-276.018-43.977 824.573-53c55.828 72.784 331.237 414.417 0 733.555-370.851 357.305-490.48 60.453-1232.183 731.755-345.632 312.82-989.25 307.15-1034.83 346.71l-1.96 6.98c-1.24-2.5-.54-4.81 1.96-6.98L-933.98-53z"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-                />
-            </g>
-            <g filter="url(#blur3)">
-                <motion.path
-                    fill="url(#grad3)"
-                    d="M259.126 545.017C515.61 303.398 250.814 55.145 86.356-38.779L-613.63-74-692 1526.81c265.983 120.93 748.077 280.72 548.59-47.54-249.359-410.33 81.932-632.229 402.536-934.253"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.5, delay: 0.4, ease: "easeOut" }}
-                />
-            </g>
-        </svg>
+        {/* Blob 1 - Top Right - Pink/Rose */}
+        <motion.div
+            className="absolute -top-[10%] -right-[10%] w-[70vw] h-[70vw] max-w-[800px] max-h-[800px] rounded-full bg-gradient-to-br from-[#F8B8BC] via-[#FA9898] to-[#BEE4BE] opacity-30 blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.3 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+            style={{ transform: "translate3d(0,0,0)" }} // Force hardware acceleration
+        />
+
+        {/* Blob 2 - Middle Left - Orange/Yellow */}
+        <motion.div
+            className="absolute top-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-tr from-[#FEF1C3] via-[#FBAF59] to-[#F86A1A] opacity-20 blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.2 }}
+            transition={{ duration: 2, delay: 0.3, ease: "easeOut" }}
+            style={{ transform: "translate3d(0,0,0)" }}
+        />
+
+        {/* Blob 3 - Bottom Center - Teal/Purple */}
+        <motion.div
+            className="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] max-w-[900px] max-h-[900px] rounded-full bg-gradient-to-t from-[#00CAE5] to-[#D068BB] opacity-20 blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.2 }}
+            transition={{ duration: 2, delay: 0.6, ease: "easeOut" }}
+            style={{ transform: "translate3d(0,0,0)" }}
+        />
+
         {/* Fade overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
     </div>
 )
 

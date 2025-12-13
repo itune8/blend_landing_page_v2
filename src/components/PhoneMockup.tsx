@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
 
 // Sample event data
@@ -76,14 +76,12 @@ export function PhoneMockup() {
     const [showVideo, setShowVideo] = useState(false)
 
     useEffect(() => {
-        let timer: ReturnType<typeof setTimeout>
-        if (!showVideo) {
-            timer = setTimeout(() => {
-                setShowVideo(true)
-            }, 4000) // Display static UI for 4 seconds before transitioning
-        }
+        // Start showing video after delay
+        const timer = setTimeout(() => {
+            setShowVideo(true)
+        }, 4000)
         return () => clearTimeout(timer)
-    }, [showVideo])
+    }, [])
 
     return (
         <div className="relative w-full h-[800px] flex items-center justify-center overflow-visible" style={{ perspective: "1637px" }}>
@@ -106,7 +104,7 @@ export function PhoneMockup() {
             >
                 {/* Phone Container - Floating Animation */}
                 <motion.div
-                    className="w-full h-full bg-[#0f1115] rounded-[3rem] border-[8px] border-[#2a2f3a] overflow-hidden shadow-2xl relative"
+                    className="w-full h-full bg-[#0f1115] rounded-[3rem] border-[8px] border-[#2a2f3a] overflow-hidden relative"
                     animate={{
                         y: [-15, 15, -15],
                         rotateZ: [-1, 1, -1],
@@ -117,9 +115,12 @@ export function PhoneMockup() {
                         ease: "easeInOut"
                     }}
                     style={{
-                        boxShadow: "40px 40px 80px rgba(0,0,0,0.6), -10px -10px 30px rgba(255,255,255,0.05)",
+                        // Optimized shadow: smaller blur on mobile (default), larger on desktop via media queries not shown here but standardizing
+                        // We use a lighter static shadow for better performance than animating a complex box-shadow
+                        boxShadow: "0px 20px 40px rgba(0,0,0,0.4)",
                         transformStyle: "preserve-3d",
-                        backfaceVisibility: "hidden" // Optimization
+                        backfaceVisibility: "hidden",
+                        willChange: "transform"
                     }}
                 >
                     {/* Dynamic Island */}
@@ -132,107 +133,94 @@ export function PhoneMockup() {
 
                     {/* Content Container */}
                     <div className="w-full h-full bg-[#111318] relative overflow-hidden rounded-[2.5rem]">
-                        <AnimatePresence>
-                            {!showVideo ? (
-                                <motion.div
-                                    key="static-ui"
-                                    className="absolute inset-0 w-full h-full text-white pt-12 px-5 pb-8 flex flex-col bg-[#111318]"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{
-                                        opacity: 0,
-                                        transition: { duration: 0.8, ease: "easeInOut" }
-                                    }}
-                                    transition={{ duration: 0.8 }}
-                                >
-                                    {/* Header */}
-                                    <div className="flex justify-between items-center mb-5">
-                                        <div className="flex items-center gap-2">
-                                            <svg viewBox="0 0 40 40" className="w-6 h-6 text-teal-400" fill="none">
-                                                <circle cx="12" cy="20" r="7" stroke="currentColor" strokeWidth="3.5" />
-                                                <path d="M12 13 L12 7 Q12 2 17 2 Q22 2 22 7 Q22 13 17 13" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
-                                            </svg>
-                                            <span className="font-bold text-lg tracking-tight">blend</span>
-                                        </div>
-                                    </div>
 
-                                    {/* Title */}
-                                    <div className="mb-5">
-                                        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Explore Events</h2>
-                                        <p className="text-teal-500/80 text-xs font-medium mt-1">Happening Near You</p>
-                                    </div>
+                        {/* Video Layer - Always rendered, stays underneath until revealed */}
+                        <div className="absolute inset-0 w-full h-full z-0">
+                            <video
+                                className="w-full h-full object-cover"
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
+                            >
+                                <source src="/blend-3d-demo.mp4" type="video/mp4" />
+                            </video>
+                        </div>
 
-                                    {/* Event List */}
-                                    <div className="space-y-3 overflow-y-auto no-scrollbar flex-1">
-                                        {events.map((event, i) => (
-                                            <motion.div
-                                                key={event.id}
-                                                className="group relative bg-[#1a1d24] rounded-xl p-3 border border-gray-800 hover:border-teal-500/30 transition-colors"
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.2 + i * 0.1 }}
-                                            >
-                                                <div className="flex gap-3">
-                                                    <div className="flex-shrink-0 w-12 h-14 bg-gray-800 rounded-lg flex flex-col items-center justify-center border border-gray-700">
-                                                        <span className="text-[9px] uppercase font-bold text-gray-400">DEC</span>
-                                                        <span className="text-lg font-bold text-white">1{5 + i}</span>
-                                                    </div>
-                                                    <div className="flex-1 min-w-0 py-0.5">
-                                                        <h3 className="font-semibold text-sm truncate pr-2">{event.name}</h3>
-                                                        <div className="flex justify-between items-center mt-2">
-                                                            <AvatarPile images={event.attendees} />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        ))}
+                        {/* Static UI Layer - Fades out to reveal video */}
+                        <motion.div
+                            className="absolute inset-0 w-full h-full text-white pt-12 px-5 pb-8 flex flex-col bg-[#111318] z-10"
+                            initial={{ opacity: 1 }}
+                            animate={{ opacity: showVideo ? 0 : 1 }}
+                            transition={{ duration: 0.8, ease: "easeInOut" }}
+                            style={{ pointerEvents: showVideo ? "none" : "auto" }}
+                        >
+                            {/* Header */}
+                            <div className="flex justify-between items-center mb-5">
+                                <div className="flex items-center gap-2">
+                                    <svg viewBox="0 0 40 40" className="w-6 h-6 text-teal-400" fill="none">
+                                        <circle cx="12" cy="20" r="7" stroke="currentColor" strokeWidth="3.5" />
+                                        <path d="M12 13 L12 7 Q12 2 17 2 Q22 2 22 7 Q22 13 17 13" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+                                    </svg>
+                                    <span className="font-bold text-lg tracking-tight">blend</span>
+                                </div>
+                            </div>
 
-                                        {/* Featured Card */}
-                                        <motion.div
-                                            className="relative h-36 rounded-xl overflow-hidden mt-1 border border-gray-800"
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: 0.5 }}
-                                        >
-                                            <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500&q=80" alt="Party" className="absolute inset-0 w-full h-full object-cover opacity-60" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
-                                            <div className="absolute bottom-3 left-3 right-3">
-                                                <div className="text-[9px] font-bold text-teal-400 uppercase mb-0.5">Featured</div>
-                                                <h3 className="font-bold text-white text-lg leading-tight">Neon Nights</h3>
-                                            </div>
-                                        </motion.div>
-                                    </div>
+                            {/* Title */}
+                            <div className="mb-5">
+                                <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Explore Events</h2>
+                                <p className="text-teal-500/80 text-xs font-medium mt-1">Happening Near You</p>
+                            </div>
 
-                                    {/* Floating Nav */}
-                                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] h-16 bg-[#1e232d]/90 backdrop-blur-xl border border-white/5 rounded-2xl flex items-center justify-between px-6 shadow-2xl z-20">
-                                        <div className="w-11 h-11 -mt-10 bg-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/40 text-white border-4 border-[#111318]">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="video-content"
-                                    className="absolute inset-0 w-full h-full"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0, transition: { duration: 0.8 } }}
-                                    transition={{ duration: 0.8 }}
-                                    style={{ backfaceVisibility: "hidden", transform: "translateZ(0)" }} // Video optimization
-                                >
-                                    <video
-                                        className="w-full h-full object-cover"
-                                        autoPlay
-                                        muted
-                                        playsInline
-                                        onEnded={() => setShowVideo(false)}
-                                        style={{ transform: "translateZ(0)" }}
+                            {/* Event List */}
+                            <div className="space-y-3 overflow-y-auto no-scrollbar flex-1">
+                                {events.map((event, i) => (
+                                    <motion.div
+                                        key={event.id}
+                                        className="group relative bg-[#1a1d24] rounded-xl p-3 border border-gray-800 hover:border-teal-500/30 transition-colors"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 + i * 0.1 }}
                                     >
-                                        <source src="/blend-3d-demo.mp4" type="video/mp4" />
-                                    </video>
+                                        <div className="flex gap-3">
+                                            <div className="flex-shrink-0 w-12 h-14 bg-gray-800 rounded-lg flex flex-col items-center justify-center border border-gray-700">
+                                                <span className="text-[9px] uppercase font-bold text-gray-400">DEC</span>
+                                                <span className="text-lg font-bold text-white">1{5 + i}</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0 py-0.5">
+                                                <h3 className="font-semibold text-sm truncate pr-2">{event.name}</h3>
+                                                <div className="flex justify-between items-center mt-2">
+                                                    <AvatarPile images={event.attendees} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+
+                                {/* Featured Card */}
+                                <motion.div
+                                    className="relative h-36 rounded-xl overflow-hidden mt-1 border border-gray-800"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500&q=80" alt="Party" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
+                                    <div className="absolute bottom-3 left-3 right-3">
+                                        <div className="text-[9px] font-bold text-teal-400 uppercase mb-0.5">Featured</div>
+                                        <h3 className="font-bold text-white text-lg leading-tight">Neon Nights</h3>
+                                    </div>
                                 </motion.div>
-                            )}
-                        </AnimatePresence>
+                            </div>
+
+                            {/* Floating Nav */}
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] h-16 bg-[#1e232d]/90 backdrop-blur-xl border border-white/5 rounded-2xl flex items-center justify-between px-6 shadow-2xl z-20">
+                                <div className="w-11 h-11 -mt-10 bg-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/40 text-white border-4 border-[#111318]">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </motion.div>
             </motion.div>

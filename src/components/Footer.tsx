@@ -69,19 +69,19 @@ export function Footer() {
         >
             <div className="max-w-4xl mx-auto px-4 text-sm text-muted-foreground">
                 {/* Main footer content */}
-                <div className="border-t border-border pt-4 flex flex-wrap justify-between items-center gap-4">
+                <div className="border-t border-border pt-8 pb-4 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 text-center md:text-left">
                     {/* Left side - Logo and links */}
-                    <div className="flex items-center flex-wrap gap-2">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 w-full md:w-auto">
                         <motion.a
                             href="/"
-                            className="py-2 -ml-2 hover:text-foreground transition-colors"
+                            className="py-2 hover:text-foreground transition-colors flex justify-center md:justify-start w-full md:w-auto"
                             whileHover={{ scale: 1.02 }}
                             aria-label="Blend Home"
                         >
                             <BlendWordmark />
                         </motion.a>
 
-                        <div className="flex items-center">
+                        <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-1 w-full md:w-auto">
                             {footerLinks.map((link) => (
                                 <motion.a
                                     key={link.label}
@@ -96,7 +96,7 @@ export function Footer() {
                     </div>
 
                     {/* Right side - Social icons */}
-                    <div className="flex items-center -mx-2.5">
+                    <div className="flex items-center justify-center md:justify-end gap-1 w-full md:w-auto">
                         {socialLinks.map((link) => (
                             <motion.a
                                 key={link.label}
@@ -115,7 +115,7 @@ export function Footer() {
                 </div>
 
                 {/* Secondary links */}
-                <div className="py-2 pl-1 text-xs flex flex-wrap gap-1">
+                <div className="py-2 flex justify-center md:justify-start text-xs flex-wrap gap-4 md:gap-1">
                     {secondaryLinks.map((link) => (
                         <motion.a
                             key={link.label}
