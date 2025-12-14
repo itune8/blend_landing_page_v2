@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Check, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useNavigate } from "react-router-dom"
 
 interface PlanFeature {
     text: string
@@ -61,7 +62,7 @@ const enterpriseFeatures = [
     "Volume Discounts",
 ]
 
-function PricingCard({ plan, isYearly }: { plan: PricingPlan; isYearly: boolean }) {
+function PricingCard({ plan, isYearly, onGetStarted }: { plan: PricingPlan; isYearly: boolean; onGetStarted: () => void }) {
     const price = isYearly ? plan.price.yearly : plan.price.monthly
 
     return (
@@ -115,6 +116,7 @@ function PricingCard({ plan, isYearly }: { plan: PricingPlan; isYearly: boolean 
                 <Button
                     variant={plan.isBrand ? "brand" : "default"}
                     className="w-full"
+                    onClick={onGetStarted}
                 >
                     {plan.cta}
                 </Button>
@@ -148,12 +150,13 @@ function PricingCard({ plan, isYearly }: { plan: PricingPlan; isYearly: boolean 
 
 export function Pricing() {
     const [isYearly, setIsYearly] = useState(true)
+    const navigate = useNavigate()
 
     return (
         <div className="min-h-screen grid-pattern">
             {/* Header */}
             <motion.div
-                className="text-center pt-28 px-4"
+                className="text-center pt-32 px-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -206,7 +209,7 @@ export function Pricing() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 * index }}
                     >
-                        <PricingCard plan={plan} isYearly={isYearly} />
+                        <PricingCard plan={plan} isYearly={isYearly} onGetStarted={() => navigate('/create-event')} />
                     </motion.div>
                 ))}
             </div>
@@ -232,7 +235,7 @@ export function Pricing() {
                             </div>
                         </div>
                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Button variant="light">Contact Sales</Button>
+                            <Button variant="light" onClick={() => window.location.href = 'mailto:sales@blend.lb'}>Contact Sales</Button>
                         </motion.div>
                     </div>
 

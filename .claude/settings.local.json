@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:docs.lu.ma)",
+      "WebFetch(domain:docs.luma.com)",
+      "WebFetch(domain:luma.com)"
+    ]
+  }
+}

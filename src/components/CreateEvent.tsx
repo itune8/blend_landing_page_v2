@@ -3,18 +3,25 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     ArrowLeft, MapPin,
-    ChevronDown, Plus
+    ChevronDown, Plus, Ticket, Calendar, LogOut
 } from "lucide-react"
+import type { Event } from "@/services"
+import { eventService } from "@/services"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 
 export function CreateEvent() {
     // State for the Auth Modal
     const [showAuthModal, setShowAuthModal] = useState(false)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [email, setEmail] = useState("")
+    const { user, signIn, signInWithGoogle, signOut } = useAuth()
+    const isAuthenticated = !!user
+    const [showUserMenu, setShowUserMenu] = useState(false)
 
     // Dashboard State
     const [eventsFilter, setEventsFilter] = useState<'upcoming' | 'past'>('upcoming')
+    const [myEvents, setMyEvents] = useState<Event[]>([])
 
     // Navigation
     const routerLocation = useLocation()
@@ -30,14 +37,36 @@ export function CreateEvent() {
 
     const activeTab = getActiveTab()
 
+    useEffect(() => {
+        const loadEvents = async () => {
+            if (user) {
+                console.log('[Dashboard] Loading events for user:', user.id, user.email)
+                // Don't pass user.id - let Supabase service use the authenticated user
+                const { events, error } = await eventService.getEvents()
+                console.log('[Dashboard] Events loaded:', events?.length, 'Error:', error)
+                if (events) {
+                    console.log('[Dashboard] Events:', events.map(e => ({ id: e.id, title: e.title })))
+                }
+                setMyEvents(events || [])
+            } else {
+                console.log('[Dashboard] No user, clearing events')
+                setMyEvents([])
+            }
+        }
+        loadEvents()
+    }, [user, activeTab]) // Reload when user or tab changes
+
+    const upcomingEvents = myEvents.filter(e => new Date(e.start_date) > new Date())
+    const pastEvents = myEvents.filter(e => new Date(e.start_date) <= new Date())
+
     // Scroll to top on route change
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [routerLocation.pathname])
 
     // Handle authentication
-    const handleAuth = () => {
-        setIsAuthenticated(true)
+    const handleAuth = async () => {
+        await signIn(email || "user@demo.com")
         setShowAuthModal(false)
     }
 
@@ -73,8 +102,44 @@ export function CreateEvent() {
                 <div className="flex items-center gap-4">
                     <div className="text-xs text-gray-500">2:52 am IST</div>
                     {isAuthenticated ? (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-xs font-bold text-black cursor-pointer ring-2 ring-white/10 hover:ring-white/20 transition-all">
-                            JD
+                        <div className="relative">
+                            <div
+                                className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-xs font-bold text-black cursor-pointer ring-2 ring-white/10 hover:ring-white/20 transition-all"
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                            >
+                                {user?.avatar_url ? (
+                                    <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                                ) : (
+                                    <span className="text-black">{user?.name?.substring(0, 2).toUpperCase() || "JD"}</span>
+                                )}
+                            </div>
+
+                            {/* User Dropdown Menu */}
+                            <AnimatePresence>
+                                {showUserMenu && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                                        className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-xl overflow-hidden shadow-xl z-50"
+                                    >
+                                        <div className="p-3 border-b border-white/5">
+                                            <p className="text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                        </div>
+                                        <button
+                                            onClick={async () => {
+                                                await signOut()
+                                                setShowUserMenu(false)
+                                            }}
+                                            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-400 hover:bg-white/5 transition-colors"
+                                        >
+                                            <LogOut className="w-4 h-4" />
+                                            Sign Out
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     ) : (
                         <Button
@@ -114,67 +179,78 @@ export function CreateEvent() {
                     </div>
 
                     {eventsFilter === 'upcoming' ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-center">
-                            <div className="w-24 h-24 bg-[#1a1a1a] rounded-3xl flex items-center justify-center mb-6 border border-white/5">
-                                <span className="text-4xl font-bold text-gray-700">0</span>
+                        upcomingEvents.length > 0 ? (
+                            <div className="grid grid-cols-1 gap-4">
+                                {upcomingEvents.map(event => (
+                                    <div key={event.id} className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 flex gap-4 items-center">
+                                        <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl ${event.cover_image_url ? '' : 'bg-gradient-to-br ' + (event.theme?.gradient || 'from-gray-700 to-gray-600')}`}>
+                                            {event.cover_image_url ? (
+                                                <img src={event.cover_image_url} alt="" className="w-full h-full object-cover rounded-xl" />
+                                            ) : (
+                                                <span>📅</span>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-white">{event.title}</h4>
+                                            <p className="text-gray-500 text-xs flex items-center gap-1 mt-1">
+                                                <Calendar className="w-3 h-3" />
+                                                {new Date(event.start_date).toLocaleDateString()} • {new Date(event.start_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-gray-400 border border-white/5 hover:text-white"
+                                                onClick={() => navigate(`/event/${event.id}`)}
+                                            >
+                                                Manage
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            <h2 className="text-xl font-medium text-white mb-2">No Upcoming Events</h2>
-                            <p className="text-gray-500 mb-8 max-w-sm">You have no upcoming events. Why not host one?</p>
-                            <Button
-                                onClick={() => navigate('/create')}
-                                className="bg-white text-black hover:bg-gray-200"
-                            >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Create Event
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-8">
-                            {/* Mock Past Events Grouping */}
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-400 mb-4">Yesterday</h3>
-                                <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 flex gap-4 items-center">
-                                    <div className="w-16 h-16 bg-[#2a2a2a] rounded-xl flex items-center justify-center text-2xl">
-                                        🎨
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-white">Sahil's Event</h4>
-                                        <p className="text-yellow-500 text-xs flex items-center gap-1 mt-1">
-                                            <span className="w-1 h-1 bg-yellow-500 rounded-full" />
-                                            Location Missing
-                                        </p>
-                                    </div>
-                                    <div className="ml-auto">
-                                        <Button variant="ghost" size="sm" className="text-gray-400 border border-white/5">
-                                            Manage Event
-                                        </Button>
-                                    </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-20 text-center">
+                                <div className="w-24 h-24 bg-[#1a1a1a] rounded-3xl flex items-center justify-center mb-6 border border-white/5">
+                                    <span className="text-4xl font-bold text-gray-700">0</span>
                                 </div>
+                                <h2 className="text-xl font-medium text-white mb-2">No Upcoming Events</h2>
+                                <p className="text-gray-500 mb-8 max-w-sm">You have no upcoming events. Why not host one?</p>
+                                <Button
+                                    onClick={() => navigate('/create')}
+                                    className="bg-white text-black hover:bg-gray-200"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Create Event
+                                </Button>
                             </div>
-
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-400 mb-4">22 Nov</h3>
-                                <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 flex gap-4 items-center">
-                                    <div className="w-16 h-16 bg-white rounded-xl overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3" alt="Event" className="w-full h-full object-cover" />
+                        )
+                    ) : (
+                        <div className="flex flex-col gap-4">
+                            {pastEvents.length > 0 ? pastEvents.map(event => (
+                                <div key={event.id} className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 flex gap-4 items-center opacity-70 hover:opacity-100 transition-opacity">
+                                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl ${event.cover_image_url ? '' : 'bg-gray-800'}`}>
+                                        {event.cover_image_url ? (
+                                            <img src={event.cover_image_url} alt="" className="w-full h-full object-cover rounded-xl" />
+                                        ) : (
+                                            <span>🏁</span>
+                                        )}
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-white">RollUp Hack'25</h4>
+                                        <h4 className="font-bold text-white">{event.title}</h4>
                                         <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                                             <MapPin className="w-3 h-3" />
-                                            Centurion University
+                                            {event.location_type === 'physical' ? (event.location_url || 'Location') : 'Virtual'}
                                         </div>
                                     </div>
                                     <div className="ml-auto flex items-center gap-3">
-                                        <span className="bg-orange-500/20 text-orange-500 text-[10px] px-2 py-0.5 rounded-full font-bold">Pending</span>
-                                        <div className="flex -space-x-2">
-                                            {[1, 2, 3].map(i => (
-                                                <div key={i} className="w-6 h-6 rounded-full bg-gray-600 border border-[#1a1a1a]" />
-                                            ))}
-                                        </div>
+                                        <span className="bg-gray-500/20 text-gray-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Ended</span>
                                     </div>
                                 </div>
-                            </div>
+                            )) : (
+                                <div className="text-center py-10 text-gray-500">No past events found.</div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -189,7 +265,12 @@ export function CreateEvent() {
                     <div className="mb-12">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">My Calendars</h2>
-                            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white h-8 hover:bg-white/5">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-gray-400 hover:text-white h-8 hover:bg-white/5"
+                                onClick={() => navigate('/create')}
+                            >
                                 <Plus className="w-4 h-4 mr-1" />
                                 Create
                             </Button>
@@ -200,7 +281,7 @@ export function CreateEvent() {
                                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex-shrink-0" />
                                     <div>
                                         <h3 className="font-semibold text-white group-hover:text-teal-400 transition-colors">
-                                            {isAuthenticated ? "JD Profile" : "Sahil Kumar"}
+                                            {isAuthenticated ? user?.name || "User Profile" : "Guest User"}
                                         </h3>
                                         <p className="text-xs text-gray-500 mt-1">No Subscribers</p>
                                     </div>
@@ -273,7 +354,7 @@ export function CreateEvent() {
                                 { title: "Founders & VC Networking", date: "Dec 16", time: "5:30 PM", location: "Viman Nagar", color: "from-orange-500 to-red-500" },
                                 { title: "Design Systems Workshop", date: "Dec 18", time: "2:00 PM", location: "Aundh", color: "from-blue-400 to-cyan-500" }
                             ].map((event, i) => (
-                                <div key={i} className="group cursor-pointer">
+                                <div key={i} className="group cursor-pointer" onClick={() => alert(`${event.title}\n${event.date} at ${event.time}\n${event.location}\n\nThis is a demo event.`)}>
                                     <div className={`aspect-[4/3] rounded-2xl bg-gradient-to-br ${event.color} relative overflow-hidden mb-4`}>
                                         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
                                         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md rounded-lg px-2 py-1 flex flex-col items-center shadow-lg">
@@ -301,7 +382,7 @@ export function CreateEvent() {
                                 { title: "Indie Hackers Pune", date: "Sun, Dec 15", time: "11:00 AM", location: "Starbucks, FC Road", color: "bg-yellow-600" },
                                 { title: "Web3 Developer Sprint", date: "Mon, Dec 16", time: "9:00 AM", location: "Co-work, Balewadi", color: "bg-purple-600" }
                             ].map((event, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 bg-[#1a1a1a] border border-white/5 rounded-2xl hover:border-white/10 transition-colors cursor-pointer group">
+                                <div key={i} className="flex items-center gap-4 p-4 bg-[#1a1a1a] border border-white/5 rounded-2xl hover:border-white/10 transition-colors cursor-pointer group" onClick={() => alert(`${event.title}\n${event.date} at ${event.time}\n${event.location}\n\nThis is a demo event.`)}>
                                     <div className={`w-16 h-16 rounded-xl ${event.color} flex-shrink-0`} />
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-white text-base mb-1 group-hover:text-teal-400 transition-colors">{event.title}</h3>
@@ -311,7 +392,12 @@ export function CreateEvent() {
                                             <span>{event.location}</span>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="hidden md:flex bg-white/5 hover:bg-white/10 text-white border border-white/5">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="hidden md:flex bg-white/5 hover:bg-white/10 text-white border border-white/5"
+                                        onClick={() => alert('Event details coming soon! This is a demo event.')}
+                                    >
                                         View Details
                                     </Button>
                                 </div>
@@ -367,6 +453,8 @@ export function CreateEvent() {
                                                 type="email"
                                                 placeholder="you@email.com"
                                                 className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -387,7 +475,14 @@ export function CreateEvent() {
                                     <div className="flex flex-col gap-2">
                                         <button
                                             className="flex items-center justify-center gap-3 h-11 bg-[#222] hover:bg-[#2a2a2a] rounded-xl transition-all group border border-white/5"
-                                            onClick={handleAuth}
+                                            onClick={async () => {
+                                                const { error } = await signInWithGoogle()
+                                                if (error) {
+                                                    alert('Google sign-in error: ' + error)
+                                                } else {
+                                                    setShowAuthModal(false)
+                                                }
+                                            }}
                                         >
                                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

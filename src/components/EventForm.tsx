@@ -9,12 +9,25 @@ import {
     Check
 } from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
+import { eventService } from "@/services"
 import { Button } from "@/components/ui/button"
+import { usePayment } from "@/hooks/usePayment"
+import { CreditCard, CheckCircle } from "lucide-react"
 
 export function EventForm() {
     // State for the Auth Modal - Set to true for mandatory sign-in
     const [showAuthModal, setShowAuthModal] = useState(true)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const { user, signIn, signInWithGoogle } = useAuth()
+    const isAuthenticated = !!user
+    const [authEmail, setAuthEmail] = useState("")
+
+    // Close auth modal if user is already signed in (e.g. came from dashboard)
+    useEffect(() => {
+        if (isAuthenticated) {
+            setShowAuthModal(false)
+        }
+    }, [isAuthenticated])
 
     // State for the Event Form
     const [eventName, setEventName] = useState("")
@@ -25,10 +38,18 @@ export function EventForm() {
     const [showLocationInput, setShowLocationInput] = useState(false)
 
     // Date/Time States
-    const [startDate, setStartDate] = useState("Sun, 14 Dec")
-    const [startTime, setStartTime] = useState("03:00 AM")
-    const [endDate, setEndDate] = useState("Sun, 14 Dec")
-    const [endTime, setEndTime] = useState("04:00 AM")
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(today.getDate() + 1)
+
+    const formatDate = (date: Date) => date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+
+    const [startDate, setStartDate] = useState(formatDate(today))
+    const [startDateObj, setStartDateObj] = useState(today)
+    const [startTime, setStartTime] = useState("09:00 AM")
+    const [endDate, setEndDate] = useState(formatDate(tomorrow))
+    const [endDateObj, setEndDateObj] = useState(tomorrow)
+    const [endTime, setEndTime] = useState("10:00 AM")
     const [timezone, setTimezone] = useState("GMT+05:30 Calcutta")
 
     // UI Toggles for Pickers
@@ -73,6 +94,43 @@ export function EventForm() {
     }
     const [ticketPrice, setTicketPrice] = useState("Free")
     const [requireApproval, setRequireApproval] = useState(false)
+
+    // Payment Integration
+    const { initiatePayment, isConfigured: isPaymentConfigured } = usePayment()
+    const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'error'>('idle')
+    const [paymentId, setPaymentId] = useState<string | null>(null)
+
+    const parsePrice = (priceStr: string): number => {
+        const numMatch = priceStr.match(/\d+/)
+        return numMatch ? parseInt(numMatch[0]) : 0
+    }
+
+    const handleTestPayment = () => {
+        const price = parsePrice(ticketPrice)
+        if (price <= 0) {
+            alert('Please set a numeric ticket price first (e.g., "₹500")')
+            return
+        }
+
+        setPaymentStatus('idle')
+        initiatePayment({
+            amount: price,
+            eventName: eventName || 'Test Event',
+            userEmail: user?.email,
+            userName: user?.name,
+            onSuccess: (result) => {
+                setPaymentStatus('success')
+                setPaymentId(result.razorpay_payment_id)
+            },
+            onError: () => {
+                setPaymentStatus('error')
+            }
+        })
+    }
+
+    // Price Modal State
+    const [showPriceModal, setShowPriceModal] = useState(false)
+    const [priceInput, setPriceInput] = useState("")
 
     const [visibility, setVisibility] = useState("Public")
     const [calendar, setCalendar] = useState("Personal Calendar")
@@ -145,8 +203,8 @@ export function EventForm() {
     const [newQuestionRequired, setNewQuestionRequired] = useState(false)
 
     // Handle authentication
-    const handleAuth = () => {
-        setIsAuthenticated(true)
+    const handleAuth = async () => {
+        await signIn(authEmail || "user@demo.com")
         setShowAuthModal(false)
     }
 
@@ -390,20 +448,37 @@ export function EventForm() {
                                             className="absolute top-full left-0 mt-2 bg-[#222] border border-white/10 rounded-xl shadow-2xl p-4 w-72 z-50"
                                         >
                                             <div className="flex justify-between items-center mb-4">
-                                                <button className="p-1 hover:bg-white/10 rounded"><ChevronDown className="w-4 h-4 rotate-90" /></button>
-                                                <span className="font-semibold text-sm">December 2024</span>
-                                                <button className="p-1 hover:bg-white/10 rounded"><ChevronDown className="w-4 h-4 -rotate-90" /></button>
+                                                <button
+                                                    className="p-1 hover:bg-white/10 rounded"
+                                                    onClick={(e) => { e.stopPropagation(); prevMonth(); }}
+                                                >
+                                                    <ChevronDown className="w-4 h-4 rotate-90" />
+                                                </button>
+                                                <span className="font-semibold text-sm">{pickerDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
+                                                <button
+                                                    className="p-1 hover:bg-white/10 rounded"
+                                                    onClick={(e) => { e.stopPropagation(); nextMonth(); }}
+                                                >
+                                                    <ChevronDown className="w-4 h-4 -rotate-90" />
+                                                </button>
                                             </div>
                                             <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2 text-gray-500">
                                                 <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
                                             </div>
                                             <div className="grid grid-cols-7 gap-1 text-center text-sm">
-                                                {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                                                {Array.from({ length: getFirstDayOfMonth(pickerDate) }).map((_, i) => (
+                                                    <div key={`empty-${i}`} />
+                                                ))}
+                                                {Array.from({ length: getDaysInMonth(pickerDate) }, (_, i) => i + 1).map(d => (
                                                     <button
                                                         key={d}
-                                                        className={`w - 8 h - 8 rounded - full hover: bg - white / 10 flex items - center justify - center transition - colors ${d === 14 ? 'bg-teal-500 text-black font-bold hover:bg-teal-400' : 'text-gray-300'} `}
+                                                        className={`w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors ${startDate.includes(`${d} ${pickerDate.toLocaleString('default', { month: 'short' })}`) ? 'bg-teal-500 text-black font-bold hover:bg-teal-400' : 'text-gray-300'} `}
                                                         onClick={() => {
-                                                            setStartDate(`Sun, ${d} Dec`)
+                                                            const newDate = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), d)
+                                                            const dayName = newDate.toLocaleString('default', { weekday: 'short' })
+                                                            const monthName = newDate.toLocaleString('default', { month: 'short' })
+                                                            setStartDate(`${dayName}, ${d} ${monthName} ${newDate.getFullYear()}`)
+                                                            setStartDateObj(newDate)
                                                             setShowStartDatePicker(false)
                                                         }}
                                                     >
@@ -482,7 +557,7 @@ export function EventForm() {
                                             <div className="flex justify-between items-center mb-4">
                                                 <button
                                                     className="p-1 hover:bg-white/10 rounded"
-                                                    onClick={prevMonth}
+                                                    onClick={(e) => { e.stopPropagation(); prevMonth(); }}
                                                 >
                                                     <ChevronDown className="w-4 h-4 rotate-90" />
                                                 </button>
@@ -491,7 +566,7 @@ export function EventForm() {
                                                 </span>
                                                 <button
                                                     className="p-1 hover:bg-white/10 rounded"
-                                                    onClick={nextMonth}
+                                                    onClick={(e) => { e.stopPropagation(); nextMonth(); }}
                                                 >
                                                     <ChevronDown className="w-4 h-4 -rotate-90" />
                                                 </button>
@@ -514,7 +589,8 @@ export function EventForm() {
                                                             const newDate = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), d)
                                                             const dayName = newDate.toLocaleString('default', { weekday: 'short' })
                                                             const monthName = newDate.toLocaleString('default', { month: 'short' })
-                                                            setEndDate(`${dayName}, ${d} ${monthName}`)
+                                                            setEndDate(`${dayName}, ${d} ${monthName} ${newDate.getFullYear()}`)
+                                                            setEndDateObj(newDate)
                                                             setShowEndDatePicker(false)
                                                         }}
                                                     >
@@ -822,27 +898,128 @@ export function EventForm() {
                     <div className="pt-4">
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Event Options</h3>
                         <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl overflow-hidden divide-y divide-white/5">
-                            <div
-                                className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
-                                onClick={() => {
-                                    const price = prompt("Enter ticket price (or type 'Free', 'Payment Optional'):", ticketPrice)
-                                    if (price !== null) setTicketPrice(price)
-                                }}
-                            >
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-3">
-                                        <Ticket className="w-4 h-4 text-gray-500 group-hover:text-gray-400" />
-                                        <span className="text-sm font-medium text-gray-300">Ticket Price</span>
+                            {/* Ticket Price Section */}
+                            <div className="relative">
+                                <div
+                                    className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
+                                    onClick={() => setShowPriceModal(!showPriceModal)}
+                                >
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-3">
+                                            <Ticket className="w-4 h-4 text-gray-500 group-hover:text-gray-400" />
+                                            <span className="text-sm font-medium text-gray-300">Ticket Price</span>
+                                        </div>
+                                        <span className="text-xs text-gray-500 ml-7">Click to set price</span>
                                     </div>
-                                    <span className="text-xs text-gray-500 ml-7">Free, Paid, or Flexible</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-sm font-medium ${ticketPrice === 'Free' ? 'text-green-400' : 'text-teal-400'}`}>{ticketPrice}</span>
+                                        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showPriceModal ? 'rotate-180' : ''}`} />
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-400">{ticketPrice}</span>
-                                    <svg className="w-3 h-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                </div>
+
+                                {/* Price Selection Dropdown */}
+                                <AnimatePresence>
+                                    {showPriceModal && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="bg-[#222] border-t border-white/5 overflow-hidden"
+                                        >
+                                            <div className="p-4 space-y-3">
+                                                {/* Quick Options */}
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => { setTicketPrice('Free'); setShowPriceModal(false); }}
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${ticketPrice === 'Free' ? 'bg-green-500 text-black' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                                                    >
+                                                        Free
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setTicketPrice('₹100'); setShowPriceModal(false); }}
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${ticketPrice === '₹100' ? 'bg-teal-500 text-black' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                                                    >
+                                                        ₹100
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setTicketPrice('₹500'); setShowPriceModal(false); }}
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${ticketPrice === '₹500' ? 'bg-teal-500 text-black' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                                                    >
+                                                        ₹500
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setTicketPrice('₹1000'); setShowPriceModal(false); }}
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${ticketPrice === '₹1000' ? 'bg-teal-500 text-black' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                                                    >
+                                                        ₹1000
+                                                    </button>
+                                                </div>
+
+                                                {/* Custom Price Input */}
+                                                <div className="flex gap-2">
+                                                    <div className="flex-1 relative">
+                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                                                        <input
+                                                            type="number"
+                                                            placeholder="Custom amount"
+                                                            value={priceInput}
+                                                            onChange={(e) => setPriceInput(e.target.value)}
+                                                            className="w-full pl-8 pr-4 py-2 bg-[#1a1a1a] border border-white/10 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:border-teal-500"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            if (priceInput && parseInt(priceInput) > 0) {
+                                                                setTicketPrice(`₹${priceInput}`)
+                                                                setPriceInput('')
+                                                                setShowPriceModal(false)
+                                                            }
+                                                        }}
+                                                        className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-black font-medium rounded-lg transition-colors"
+                                                    >
+                                                        Set
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
+
+                            {/* Test Payment Button - Only shown when price is set */}
+                            {parsePrice(ticketPrice) > 0 && isPaymentConfigured && (
+                                <div className="px-5 py-4 bg-gradient-to-r from-teal-500/10 to-blue-500/10">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <CreditCard className="w-4 h-4 text-teal-400" />
+                                            <div>
+                                                <span className="text-sm font-medium text-white">Test Payment</span>
+                                                <p className="text-xs text-gray-500">Verify Razorpay checkout</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            {paymentStatus === 'success' && (
+                                                <div className="flex items-center gap-1 text-green-400 text-xs">
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    <span>Paid!</span>
+                                                </div>
+                                            )}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    handleTestPayment()
+                                                }}
+                                                className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-black text-sm font-medium rounded-lg transition-colors"
+                                            >
+                                                Pay ₹{parsePrice(ticketPrice)}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {paymentId && (
+                                        <p className="text-xs text-gray-500 mt-2 font-mono truncate">ID: {paymentId}</p>
+                                    )}
+                                </div>
+                            )}
                             <div
                                 className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
                                 onClick={() => setRequireApproval(!requireApproval)}
@@ -1018,13 +1195,50 @@ export function EventForm() {
                         </Button>
                         <Button
                             className="flex-1 h-12 bg-white text-black hover:bg-gray-200 font-bold text-base rounded-xl flex items-center justify-center gap-2 transition-colors"
-                            onClick={() => {
+                            onClick={async () => {
                                 // Validation
                                 if (!eventName) {
                                     alert("Please add an event name")
                                     return
                                 }
-                                alert("Event created successfully! 🎉")
+                                // Helper to combine date object and time string
+                                const combineDateTime = (date: Date, timeStr: string) => {
+                                    const d = new Date(date)
+                                    const [time, period] = timeStr.split(' ')
+                                    let [hours, minutes] = time.split(':').map(Number)
+                                    if (period === 'PM' && hours !== 12) hours += 12
+                                    if (period === 'AM' && hours === 12) hours = 0
+                                    d.setHours(hours, minutes)
+                                    return d.toISOString()
+                                }
+
+                                console.log('[EventForm] Creating event:', eventName)
+                                const { event, error } = await eventService.createEvent({
+                                    title: eventName,
+                                    description: eventDescription,
+                                    start_date: combineDateTime(startDateObj, startTime),
+                                    end_date: combineDateTime(endDateObj, endTime),
+                                    location_type: locationType,
+                                    location_url: locationType === 'physical' ? location : undefined, // Simplify mapping
+                                    visibility: visibility.toLowerCase() as 'public' | 'private',
+                                    price: ticketPrice,
+                                    theme: selectedTheme,
+                                    capacity: isCapacityLimited ? maxCapacity : undefined
+                                })
+
+                                console.log('[EventForm] Create result:', { event, error })
+
+                                if (error) {
+                                    console.error('[EventForm] Create error:', error)
+                                    alert("Error creating event: " + error)
+                                } else if (event) {
+                                    console.log('[EventForm] Event created successfully:', event.id)
+                                    // Redirect to event detail page (Luma-style)
+                                    navigate(`/event/${event.id}`)
+                                } else {
+                                    // Fallback to events list
+                                    navigate('/events')
+                                }
                             }}
                         >
                             <Check className="w-5 h-5" />
@@ -1269,6 +1483,8 @@ export function EventForm() {
                                                 type="email"
                                                 placeholder="you@email.com"
                                                 className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all"
+                                                value={authEmail}
+                                                onChange={(e) => setAuthEmail(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -1289,7 +1505,14 @@ export function EventForm() {
                                     <div className="flex flex-col gap-2">
                                         <button
                                             className="flex items-center justify-center gap-3 h-11 bg-[#222] hover:bg-[#2a2a2a] rounded-xl transition-all group border border-white/5"
-                                            onClick={handleAuth}
+                                            onClick={async () => {
+                                                const { error } = await signInWithGoogle()
+                                                if (error) {
+                                                    alert('Google sign-in error: ' + error)
+                                                } else {
+                                                    setShowAuthModal(false)
+                                                }
+                                            }}
                                         >
                                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

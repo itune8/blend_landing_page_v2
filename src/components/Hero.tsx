@@ -64,7 +64,7 @@ export function Hero() {
     }
 
     return (
-        <section className="relative min-h-[80vh] flex items-center px-4 py-12 md:py-24">
+        <section className="relative min-h-[80vh] flex items-center px-4 py-12 md:py-24 pt-24 md:pt-32">
             <BackgroundGradient />
 
             <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-4">

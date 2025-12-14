@@ -1,4 +1,5 @@
 import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
 
 // Blend wordmark logo
 const BlendWordmark = () => (
@@ -72,25 +73,23 @@ export function Footer() {
                 <div className="border-t border-border pt-8 pb-4 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 text-center md:text-left">
                     {/* Left side - Logo and links */}
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 w-full md:w-auto">
-                        <motion.a
-                            href="/"
-                            className="py-2 hover:text-foreground transition-colors flex justify-center md:justify-start w-full md:w-auto"
-                            whileHover={{ scale: 1.02 }}
+                        <Link
+                            to="/"
+                            className="py-2 hover:text-foreground transition-colors flex justify-center md:justify-start w-full md:w-auto hover:scale-[1.02] transform"
                             aria-label="Blend Home"
                         >
                             <BlendWordmark />
-                        </motion.a>
+                        </Link>
 
                         <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-1 w-full md:w-auto">
                             {footerLinks.map((link) => (
-                                <motion.a
+                                <Link
                                     key={link.label}
-                                    href={link.href}
-                                    className="px-2 py-2 hover:text-foreground transition-colors"
-                                    whileHover={{ y: -1 }}
+                                    to={link.href}
+                                    className="px-2 py-2 hover:text-foreground transition-colors hover:-translate-y-0.5 transform"
                                 >
                                     {link.label}
-                                </motion.a>
+                                </Link>
                             ))}
                         </div>
                     </div>
@@ -117,14 +116,13 @@ export function Footer() {
                 {/* Secondary links */}
                 <div className="py-2 flex justify-center md:justify-start text-xs flex-wrap gap-4 md:gap-1">
                     {secondaryLinks.map((link) => (
-                        <motion.a
+                        <Link
                             key={link.label}
-                            href={link.href}
-                            className="px-2 py-1 text-muted-foreground/70 hover:text-muted-foreground transition-colors"
-                            whileHover={{ y: -1 }}
+                            to={link.href}
+                            className="px-2 py-1 text-muted-foreground/70 hover:text-muted-foreground transition-colors hover:-translate-y-0.5 transform"
                         >
                             {link.label}
-                        </motion.a>
+                        </Link>
                     ))}
                 </div>
             </div>
