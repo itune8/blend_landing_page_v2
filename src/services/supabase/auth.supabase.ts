@@ -11,11 +11,14 @@ export class SupabaseAuthService implements AuthService {
             return { user: null, error: "Supabase not configured" };
         }
 
+        // Use the current origin for redirect, works for both localhost and production
+        const redirectUrl = `${window.location.origin}/events`;
+
         // Use Magic Link (OTP) for passwordless auth
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: window.location.origin + '/events'
+                emailRedirectTo: redirectUrl
             }
         });
 
@@ -33,10 +36,13 @@ export class SupabaseAuthService implements AuthService {
             return { error: "Supabase not configured" };
         }
 
+        // Use the current origin for redirect, works for both localhost and production
+        const redirectUrl = `${window.location.origin}/events`;
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin + '/events',
+                redirectTo: redirectUrl,
                 queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',
