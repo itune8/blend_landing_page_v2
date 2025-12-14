@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    ArrowLeft, MapPin, AlignLeft,
-    Globe, ChevronDown,
-    Ticket, Users, Lock, Video, Upload, X, Plus, Shuffle,
+    ArrowLeft, MapPin,
+    ChevronDown,
+    Upload, X, Plus, Shuffle,
     UserPlus, Bell, List, Settings, Link as LinkIcon,
     Check
 } from "lucide-react"
