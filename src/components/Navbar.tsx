@@ -71,10 +71,10 @@ export function Navbar({ onThemeToggle, isDark }: NavbarProps) {
 
                     {/* Mobile Discover Icon (Optional, or just hide text) */}
 
-                    {/* Sign In button */}
+                    {/* Create Event button */}
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                         <Button variant="light" size="sm" rounded="full" asChild>
-                            <Link to="/signin">Sign In</Link>
+                            <Link to="/create-event">Create Event</Link>
                         </Button>
                     </motion.div>
                 </div>

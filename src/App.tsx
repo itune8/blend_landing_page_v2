@@ -5,6 +5,9 @@ import { Hero } from "@/components/Hero"
 import { Footer } from "@/components/Footer"
 import { Pricing } from "@/components/Pricing"
 
+import { CreateEvent } from "@/components/CreateEvent"
+import { EventForm } from "@/components/EventForm"
+
 function HomePage() {
   return (
     <>
@@ -49,13 +52,32 @@ function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-background overflow-x-hidden">
-        <Navbar onThemeToggle={toggleTheme} isDark={isDark} />
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-          </Routes>
-        </main>
+        {/* Navbar is rendered conditionally or globally. If globally, we might want to hide it on the standalone login page, or keep it. Luma usually hides main nav on login. I'll check route to condition it, or just let it be for now. But CreateEvent has its own styling. Let's keep Navbar for now but maybe wrap content. OR, simply move Navbar inside Routes layout if I wanted to hide it.
+        Actually, the user CreateEvent page has a "Back to Home" button and full screen dark background. It likely shouldn't have the main Navbar overlaping it.
+        I will conditionally render Navbar or better yet, move Navbar into the Page components or a Layout wrapper.
+        For minimal change: I will leave Navbar global for now, but `CreateEvent` uses z-index and full screen so it might cover it.
+        Wait, `CreateEvent` is `min-h-screen w-full fixed` or just normal flow? It's `min-h-screen`.
+        If I put it in `main`, it will appear below navbar.
+        Let's just add the route.
+        */}
+        <Routes>
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/events" element={<CreateEvent />} />
+          <Route path="/create" element={<EventForm />} />
+          <Route path="/calendars" element={<CreateEvent />} />
+          <Route path="/discover" element={<CreateEvent />} />
+          <Route path="*" element={
+            <>
+              <Navbar onThemeToggle={toggleTheme} isDark={isDark} />
+              <main>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/pricing" element={<PricingPage />} />
+                </Routes>
+              </main>
+            </>
+          } />
+        </Routes>
       </div>
     </BrowserRouter>
   )

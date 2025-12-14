@@ -44,16 +44,17 @@ const AvatarPile = ({ images }: { images: string[] }) => (
 )
 
 // Background element with Blend branding
+// Background element with Blend branding
 const BackgroundCircle = () => (
     <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full -z-20 flex items-center justify-center"
-        style={{ marginLeft: 71, marginTop: 0, scale: 1.15 }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full -z-20 flex items-center justify-center ml-0 lg:ml-[71px] mt-0 scale-100 lg:scale-115"
+        style={{ scale: 1.15 }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1.15 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
     >
         {/* Standard Gradient Ring - Static to save GPU on mobile */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#1EBFAF] via-[#22d3ee] to-[#10b981] opacity-20 blur-xl" />
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#1EBFAF] via-[#22d3ee] to-[#10b981] opacity-20 blur-lg md:blur-xl" />
 
         {/* Main Circle - Image Background */}
         <div className="relative w-[540px] h-[540px] rounded-full border border-white/5 shadow-xl overflow-hidden flex items-center justify-center bg-black">
@@ -81,154 +82,155 @@ export function PhoneMockup() {
     }, [])
 
     return (
-        <div className="relative w-full h-[800px] flex items-center justify-center overflow-visible ml-10" style={{ perspective: "1637px" }}>
+        <div className="relative w-full h-[500px] md:h-[600px] lg:h-[800px] flex items-center justify-center overflow-visible scale-[0.55] sm:scale-[0.7] md:scale-[0.85] lg:scale-100 origin-center ml-0 lg:ml-10" style={{ perspective: "1600px" }}>
 
             <BackgroundCircle />
 
-            <motion.div
-                className="relative will-change-transform"
-                style={{
-                    width: 367,
-                    height: 675,
-                    transformStyle: "preserve-3d"
-                }}
-                initial={{ opacity: 0, rotateZ: 14, rotateY: -22, rotateX: 14, scale: 0.88, x: 52, y: 59 }}
-                animate={{
-                    opacity: 1,
-                    rotateZ: 14,
-                    rotateY: -22,
-                    rotateX: 14,
-                    scale: 0.88,
-                    x: 52,
-                    y: 59
-                }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-            >
-                {/* Phone Container - Floating Animation */}
+            <div className="relative transform translate-x-0 lg:translate-x-[72px] translate-y-0 lg:translate-y-[14px]">
                 <motion.div
-                    className="w-full h-full bg-[#0f1115] rounded-[3rem] border-[8px] border-[#2a2f3a] overflow-hidden relative"
-                    animate={{
-                        y: [-10, 10, -10], // Reduced movement range for smoother feel
-                        rotateZ: [-0.5, 0.5, -0.5], // Reduced rotation
-                    }}
-                    transition={{
-                        duration: 6,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
+                    className="relative will-change-transform"
                     style={{
-                        // Optimized shadow: Reduced blur from 80px to 40px, opacity from 0.4 to 0.3
-                        boxShadow: "20px 20px 50px rgba(0,0,0,0.3)",
-                        transformStyle: "preserve-3d",
-                        backfaceVisibility: "hidden",
-                        willChange: "transform"
+                        width: 367,
+                        height: 675,
+                        transformStyle: "preserve-3d"
                     }}
+                    initial={{ opacity: 0, rotateZ: 0, rotateY: 0, rotateX: 0, scale: 0.88, x: 0, y: 0 }}
+                    animate={{
+                        opacity: 1,
+                        rotateZ: 0,
+                        rotateY: 0,
+                        rotateX: 0,
+                        scale: 0.88,
+                        x: 0,
+                        y: 0
+                    }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
                 >
-                    {/* Dynamic Island */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90px] h-[28px] bg-black rounded-b-[16px] z-50 flex justify-center items-center">
-                        <div className="w-14 h-3.5 bg-black rounded-full" />
-                    </div>
-
-                    {/* Status Bar */}
-                    <div className="absolute top-3.5 left-7 text-[10px] font-semibold text-white z-40">9:41</div>
-
-                    {/* Content Container */}
-                    <div className="w-full h-full bg-[#111318] relative overflow-hidden rounded-[2.5rem]">
-
-                        {/* Video Layer - Always rendered to prevent loading lag */}
-                        <div className="absolute inset-0 w-full h-full z-0">
-                            <video
-                                className="w-full h-full object-cover"
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                preload="auto"
-                            >
-                                <source src="/Blend_App_Hero_Edit.mp4" type="video/mp4" />
-                            </video>
+                    {/* Phone Container - Floating Animation */}
+                    <motion.div
+                        className="w-full h-full bg-[#0f1115] rounded-[3rem] border-[8px] border-[#2a2f3a] overflow-hidden relative"
+                        animate={{
+                            y: [-10, 10, -10], // Reduced movement range for smoother feel
+                        }}
+                        transition={{
+                            duration: 6,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        style={{
+                            // Optimized shadow: Reduced blur from 80px to 40px, opacity from 0.4 to 0.3
+                            boxShadow: "20px 20px 50px rgba(0,0,0,0.3)",
+                            transformStyle: "preserve-3d",
+                            backfaceVisibility: "hidden",
+                            willChange: "transform"
+                        }}
+                    >
+                        {/* Dynamic Island */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90px] h-[28px] bg-black rounded-b-[16px] z-50 flex justify-center items-center">
+                            <div className="w-14 h-3.5 bg-black rounded-full" />
                         </div>
 
-                        {/* Static UI Layer - AnimatePresence ensures proper enter/exit transitions */}
-                        <AnimatePresence>
-                            {!showVideo && (
-                                <motion.div
-                                    key="static-ui"
-                                    className="absolute inset-0 w-full h-full text-white pt-12 px-5 pb-8 flex flex-col bg-[#111318] z-10"
-                                    initial={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                        {/* Status Bar */}
+                        <div className="absolute top-3.5 left-7 text-[10px] font-semibold text-white z-40">9:41</div>
+
+                        {/* Content Container */}
+                        <div className="w-full h-full bg-[#111318] relative overflow-hidden rounded-[2.5rem]">
+
+                            {/* Video Layer - Always rendered to prevent loading lag */}
+                            <div className="absolute inset-0 w-full h-full z-0">
+                                <video
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    preload="auto"
                                 >
-                                    {/* Header */}
-                                    <div className="flex justify-between items-center mb-5">
-                                        <div className="flex items-center gap-2">
-                                            <svg viewBox="0 0 40 40" className="w-6 h-6 text-teal-400" fill="none">
-                                                <circle cx="12" cy="20" r="7" stroke="currentColor" strokeWidth="3.5" />
-                                                <path d="M12 13 L12 7 Q12 2 17 2 Q22 2 22 7 Q22 13 17 13" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
-                                            </svg>
-                                            <span className="font-bold text-lg tracking-tight">blend</span>
+                                    <source src="/Blend_App_Hero_Edit.MP4" type="video/mp4" />
+                                </video>
+                            </div>
+
+                            {/* Static UI Layer - AnimatePresence ensures proper enter/exit transitions */}
+                            <AnimatePresence>
+                                {!showVideo && (
+                                    <motion.div
+                                        key="static-ui"
+                                        className="absolute inset-0 w-full h-full text-white pt-12 px-5 pb-8 flex flex-col bg-[#111318] z-10"
+                                        initial={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                                    >
+                                        {/* Header */}
+                                        <div className="flex justify-between items-center mb-5">
+                                            <div className="flex items-center gap-2">
+                                                <svg viewBox="0 0 40 40" className="w-6 h-6 text-teal-400" fill="none">
+                                                    <circle cx="12" cy="20" r="7" stroke="currentColor" strokeWidth="3.5" />
+                                                    <path d="M12 13 L12 7 Q12 2 17 2 Q22 2 22 7 Q22 13 17 13" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+                                                </svg>
+                                                <span className="font-bold text-lg tracking-tight">blend</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* Title */}
-                                    <div className="mb-5">
-                                        <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Explore Events</h2>
-                                        <p className="text-teal-500/80 text-xs font-medium mt-1">Happening Near You</p>
-                                    </div>
+                                        {/* Title */}
+                                        <div className="mb-5">
+                                            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Explore Events</h2>
+                                            <p className="text-teal-500/80 text-xs font-medium mt-1">Happening Near You</p>
+                                        </div>
 
-                                    {/* Event List */}
-                                    <div className="space-y-3 overflow-y-auto no-scrollbar flex-1">
-                                        {events.map((event, i) => (
-                                            <motion.div
-                                                key={event.id}
-                                                className="group relative bg-[#1a1d24] rounded-xl p-3 border border-gray-800 hover:border-teal-500/30 transition-colors"
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.2 + i * 0.1 }}
-                                            >
-                                                <div className="flex gap-3">
-                                                    <div className="flex-shrink-0 w-12 h-14 bg-gray-800 rounded-lg flex flex-col items-center justify-center border border-gray-700">
-                                                        <span className="text-[9px] uppercase font-bold text-gray-400">DEC</span>
-                                                        <span className="text-lg font-bold text-white">1{5 + i}</span>
-                                                    </div>
-                                                    <div className="flex-1 min-w-0 py-0.5">
-                                                        <h3 className="font-semibold text-sm truncate pr-2">{event.name}</h3>
-                                                        <div className="flex justify-between items-center mt-2">
-                                                            <AvatarPile images={event.attendees} />
+                                        {/* Event List */}
+                                        <div className="space-y-3 overflow-y-auto no-scrollbar flex-1">
+                                            {events.map((event, i) => (
+                                                <motion.div
+                                                    key={event.id}
+                                                    className="group relative bg-[#1a1d24] rounded-xl p-3 border border-gray-800 hover:border-teal-500/30 transition-colors"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: 0.2 + i * 0.1 }}
+                                                >
+                                                    <div className="flex gap-3">
+                                                        <div className="flex-shrink-0 w-12 h-14 bg-gray-800 rounded-lg flex flex-col items-center justify-center border border-gray-700">
+                                                            <span className="text-[9px] uppercase font-bold text-gray-400">DEC</span>
+                                                            <span className="text-lg font-bold text-white">1{5 + i}</span>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0 py-0.5">
+                                                            <h3 className="font-semibold text-sm truncate pr-2">{event.name}</h3>
+                                                            <div className="flex justify-between items-center mt-2">
+                                                                <AvatarPile images={event.attendees} />
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                </motion.div>
+                                            ))}
+
+                                            {/* Featured Card */}
+                                            <motion.div
+                                                className="relative h-36 rounded-xl overflow-hidden mt-1 border border-gray-800"
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ delay: 0.5 }}
+                                            >
+                                                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500&q=80" alt="Party" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
+                                                <div className="absolute bottom-3 left-3 right-3">
+                                                    <div className="text-[9px] font-bold text-teal-400 uppercase mb-0.5">Featured</div>
+                                                    <h3 className="font-bold text-white text-lg leading-tight">Neon Nights</h3>
                                                 </div>
                                             </motion.div>
-                                        ))}
-
-                                        {/* Featured Card */}
-                                        <motion.div
-                                            className="relative h-36 rounded-xl overflow-hidden mt-1 border border-gray-800"
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: 0.5 }}
-                                        >
-                                            <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500&q=80" alt="Party" className="absolute inset-0 w-full h-full object-cover opacity-60" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
-                                            <div className="absolute bottom-3 left-3 right-3">
-                                                <div className="text-[9px] font-bold text-teal-400 uppercase mb-0.5">Featured</div>
-                                                <h3 className="font-bold text-white text-lg leading-tight">Neon Nights</h3>
-                                            </div>
-                                        </motion.div>
-                                    </div>
-
-                                    {/* Floating Nav */}
-                                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] h-16 bg-[#1e232d]/90 backdrop-blur-xl border border-white/5 rounded-2xl flex items-center justify-between px-6 shadow-2xl z-20">
-                                        <div className="w-11 h-11 -mt-10 bg-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/40 text-white border-4 border-[#111318]">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+
+                                        {/* Floating Nav */}
+                                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] h-16 bg-[#1e232d]/90 backdrop-blur-xl border border-white/5 rounded-2xl flex items-center justify-between px-6 shadow-2xl z-20">
+                                            <div className="w-11 h-11 -mt-10 bg-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-teal-500/40 text-white border-4 border-[#111318]">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </motion.div>
                 </motion.div>
-            </motion.div>
+            </div>
         </div>
     )
 }
