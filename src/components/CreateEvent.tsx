@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     ArrowLeft, MapPin,
-    ChevronDown, Plus, Ticket, Calendar, LogOut
+    ChevronDown, Plus, Calendar, LogOut
 } from "lucide-react"
 import type { Event } from "@/services"
 import { eventService } from "@/services"

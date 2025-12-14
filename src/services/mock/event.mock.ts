@@ -35,24 +35,19 @@ export class MockEventService implements EventService {
         return { event: newEvent, error: null };
     }
 
-    async getEvents(userId?: string): Promise<{ events: Event[]; error: string | null }> {
+    async getEvents(filters?: import('../types').EventFilters): Promise<{ events: Event[]; error: string | null }> {
         await new Promise(resolve => setTimeout(resolve, 400));
 
         const events = this.getStoredEvents();
-        // If userId is provided, filter by it. If not, maybe return all public events? 
-        // For dashboard "Your Events", we usually filter by host_id = current_user
+        const userId = filters?.host_id || this.getCurrentUserId();
 
-        const targetUserId = userId || this.getCurrentUserId();
-
-        if (!targetUserId) {
-            // If no user context, return public events maybe? 
-            // For now, let's return [] to be safe or all for "Discover" mock
+        if (!userId) {
+            // If no user context, return public events
             return { events: events.filter(e => e.visibility === 'public'), error: null };
         }
 
-        const userEvents = events.filter(e => e.host_id === targetUserId);
-        // Sort by date descending (newest created? or start_date?)
-        // Luma dashboard likely sorts by start_date
+        const userEvents = events.filter(e => e.host_id === userId);
+        // Sort by start_date
         return {
             events: userEvents.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()),
             error: null

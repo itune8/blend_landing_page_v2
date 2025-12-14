@@ -1221,6 +1221,7 @@ export function EventForm() {
                                     location_type: locationType,
                                     location_url: locationType === 'physical' ? location : undefined, // Simplify mapping
                                     visibility: visibility.toLowerCase() as 'public' | 'private',
+                                    status: 'published',
                                     price: ticketPrice,
                                     theme: selectedTheme,
                                     capacity: isCapacityLimited ? maxCapacity : undefined

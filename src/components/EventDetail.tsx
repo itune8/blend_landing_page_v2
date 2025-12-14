@@ -109,8 +109,7 @@ export function EventDetail() {
     }
 
     // Use theme gradient from event or fallback to Minimal
-    const themeName = event.theme?.name || 'Minimal'
-    const gradient = event.theme?.gradient || themeGradients[themeName] || themeGradients['Minimal']
+    const gradient = event.theme?.gradient || themeGradients['Minimal']
     const isHost = user?.id === event.host_id
     const isPaid = event.price && event.price !== 'Free' && event.price !== '0'
 
@@ -164,7 +163,7 @@ export function EventDetail() {
                             <div>
                                 <p className="font-medium">{formatDate(event.start_date)}</p>
                                 <p className="text-gray-400 text-sm">
-                                    {formatTime(event.start_date)} - {formatTime(event.end_date)}
+                                    {formatTime(event.start_date)}{event.end_date && ` - ${formatTime(event.end_date)}`}
                                 </p>
                             </div>
                         </div>

@@ -37,6 +37,7 @@ export function usePayment() {
             currency: 'INR',
             name: 'Blend Events',
             description: options.eventName,
+            order_id: `order_${Date.now()}`,
             prefill: {
                 name: options.userName || '',
                 email: options.userEmail || '',

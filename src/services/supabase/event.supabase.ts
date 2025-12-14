@@ -39,13 +39,14 @@ export class SupabaseEventService implements EventService {
         return { event: data as Event, error: null };
     }
 
-    async getEvents(userId?: string): Promise<{ events: Event[]; error: string | null }> {
+    async getEvents(filters?: import('../types').EventFilters): Promise<{ events: Event[]; error: string | null }> {
         if (!supabase) {
             return { events: [], error: "Supabase not configured" };
         }
 
         let query = supabase.from('events').select('*');
 
+        const userId = filters?.host_id;
         if (userId) {
             query = query.eq('host_id', userId);
         } else {
@@ -58,6 +59,11 @@ export class SupabaseEventService implements EventService {
                 query = query.eq('visibility', 'public');
             }
         }
+
+        // Apply additional filters if provided
+        if (filters?.status) query = query.eq('status', filters.status);
+        if (filters?.visibility) query = query.eq('visibility', filters.visibility);
+        if (filters?.calendar_id) query = query.eq('calendar_id', filters.calendar_id);
 
         const { data, error } = await query.order('start_date', { ascending: true });
 
