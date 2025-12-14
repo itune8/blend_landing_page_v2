@@ -3,10 +3,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     ArrowLeft, MapPin,
-    ChevronDown,
-    Upload, X, Plus, Shuffle,
-    UserPlus, Bell, List, Settings, Link as LinkIcon,
-    Check
+    ChevronDown, Plus
 } from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
