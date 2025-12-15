@@ -1,0 +1,20 @@
+"use client"
+
+import { Navbar } from "@/components/Navbar"
+import { Hero } from "@/components/Hero"
+import { Footer } from "@/components/Footer"
+import { useTheme } from "./layout"
+
+export default function HomePage() {
+    const { isDark, setIsDark } = useTheme()
+
+    return (
+        <div className="min-h-screen bg-background overflow-x-hidden">
+            <Navbar onThemeToggle={() => setIsDark(!isDark)} isDark={isDark} />
+            <main>
+                <Hero />
+                <Footer />
+            </main>
+        </div>
+    )
+}
