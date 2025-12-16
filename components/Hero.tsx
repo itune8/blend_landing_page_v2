@@ -1,35 +1,47 @@
 "use client"
 
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { FloatingEventCards } from "@/components/FloatingEventCards"
 
-// Optimized background blobs - Teal themed with reduced blur
+// Lazy load FloatingEventCards for better initial page performance
+const FloatingEventCards = dynamic(
+    () => import("@/components/FloatingEventCards").then(mod => ({ default: mod.FloatingEventCards })),
+    {
+        ssr: false,
+        loading: () => null
+    }
+)
+
+// Optimized background blobs - Teal themed with mobile-optimized blur
 const BackgroundGradient = () => (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Blob 1 - Top Right - Teal/Cyan */}
+        {/* Blob 1 - Top Right - Teal/Cyan - Reduced blur on mobile */}
         <motion.div
-            className="absolute -top-[10%] -right-[10%] w-[70vw] h-[70vw] max-w-[800px] max-h-[800px] rounded-full bg-gradient-to-br from-[#14B8A6] via-[#0D9488] to-[#06B6D4] opacity-20 blur-2xl"
+            className="absolute -top-[10%] -right-[10%] w-[70vw] h-[70vw] max-w-[800px] max-h-[800px] rounded-full bg-gradient-to-br from-[#14B8A6] via-[#0D9488] to-[#06B6D4] opacity-20 blur-xl md:blur-2xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.25 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
+            style={{ willChange: 'opacity' }}
         />
 
-        {/* Blob 2 - Middle Left - Emerald/Teal */}
+        {/* Blob 2 - Middle Left - Emerald/Teal - Reduced blur on mobile */}
         <motion.div
-            className="absolute top-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-tr from-[#10B981] via-[#14B8A6] to-[#06B6D4] opacity-15 blur-2xl"
+            className="absolute top-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-tr from-[#10B981] via-[#14B8A6] to-[#06B6D4] opacity-15 blur-xl md:blur-2xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.2 }}
             transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
+            style={{ willChange: 'opacity' }}
         />
 
-        {/* Blob 3 - Bottom Center - Deep Teal/Cyan */}
+        {/* Blob 3 - Bottom Center - Deep Teal/Cyan - Reduced blur on mobile */}
         <motion.div
-            className="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] max-w-[900px] max-h-[900px] rounded-full bg-gradient-to-t from-[#0891B2] via-[#14B8A6] to-[#2DD4BF] opacity-15 blur-2xl"
+            className="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] max-w-[900px] max-h-[900px] rounded-full bg-gradient-to-t from-[#0891B2] via-[#14B8A6] to-[#2DD4BF] opacity-15 blur-xl md:blur-2xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.2 }}
             transition={{ duration: 1.5, delay: 0.4, ease: "easeOut" }}
+            style={{ willChange: 'opacity' }}
         />
 
         {/* Fade overlay */}

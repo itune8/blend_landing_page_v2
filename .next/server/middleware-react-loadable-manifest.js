@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST='{"app/whats-blend/page.tsx -> @/components/DeviceShowcase":{"id":1399,"files":["static/chunks/399.d0e6d1d2b6a9cfda.js"]},"components/Hero.tsx -> @/components/FloatingEventCards":{"id":8715,"files":["static/chunks/715.0d3d2587838c3100.js"]}}';

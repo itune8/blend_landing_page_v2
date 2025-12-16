@@ -1,8 +1,17 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { Navbar } from "@/components/Navbar"
-import { DeviceShowcase } from "@/components/DeviceShowcase"
 import { useTheme } from "../layout"
+
+// Lazy load DeviceShowcase for better performance
+const DeviceShowcase = dynamic(
+    () => import("@/components/DeviceShowcase").then(mod => ({ default: mod.DeviceShowcase })),
+    {
+        ssr: false,
+        loading: () => null
+    }
+)
 
 export default function WhatsBlendPage() {
     const { isDark, setIsDark } = useTheme()
