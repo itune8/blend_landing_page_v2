@@ -335,6 +335,9 @@ CREATE INDEX IF NOT EXISTS idx_calendars_owner_id ON calendars(owner_id);
 CREATE INDEX IF NOT EXISTS idx_calendars_slug ON calendars(slug);
 
 CREATE INDEX IF NOT EXISTS idx_ticket_types_event_id ON ticket_types(event_id);
+CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);
+CREATE INDEX IF NOT EXISTS idx_coupons_event_id ON coupons(event_id);
+CREATE INDEX IF NOT EXISTS idx_coupons_calendar_id ON coupons(calendar_id);
 
 -- ============================================================
 -- HELPER FUNCTIONS

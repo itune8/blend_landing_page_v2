@@ -1,5 +1,4 @@
 {
-  "/page": "app/page.js",
-  "/create/page": "app/create/page.js",
-  "/create-event/page": "app/create-event/page.js"
+  "/whats-blend/page": "app/whats-blend/page.js",
+  "/page": "app/page.js"
 }

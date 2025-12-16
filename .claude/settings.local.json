@@ -12,7 +12,10 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(npm install:*)",
       "Bash(git ls-tree:*)",
-      "Bash(npm run dev)"
+      "Bash(npm run dev)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "WebFetch(domain:localhost)"
     ]
   }
 }

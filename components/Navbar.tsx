@@ -28,11 +28,9 @@ export function Navbar({ onThemeToggle, isDark }: NavbarProps) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-full py-3 fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md"
+            className="w-full py-3 fixed top-0 left-0 right-0 z-50 bg-transparent"
         >
-            <div
-                className="w-full mx-auto flex justify-between items-center px-4 md:px-0"
-            >
+            <div className="w-full mx-auto flex justify-between items-center px-4 md:px-0">
                 {/* Logo Group */}
                 <div className="transition-all duration-300 md:ml-[7%]">
                     <Link href="/" aria-label="Blend Home">
@@ -68,10 +66,18 @@ export function Navbar({ onThemeToggle, isDark }: NavbarProps) {
                         )}
                     </motion.button>
 
+                    {/* What's Blend link */}
+                    <Link
+                        href="/whats-blend"
+                        className="hidden md:flex items-center gap-1 text-sm font-semibold text-foreground/70 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                    >
+                        <span>What's Blend</span>
+                    </Link>
+
                     {/* Discover Events link */}
                     <Link
                         href="/discover"
-                        className="hidden md:flex items-center gap-1 text-sm font-medium text-foreground/40 hover:text-foreground transition-colors group"
+                        className="hidden md:flex items-center gap-1 text-sm font-medium text-foreground/60 hover:text-teal-600 dark:hover:text-teal-400 transition-colors group"
                     >
                         <span>Discover Events</span>
                         <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -79,7 +85,7 @@ export function Navbar({ onThemeToggle, isDark }: NavbarProps) {
 
                     {/* Create Event button */}
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                        <Button variant="light" size="sm" rounded="full" asChild>
+                        <Button variant="light" size="sm" rounded="full" className="bg-teal-500 hover:bg-teal-600 text-white border-0" asChild>
                             <Link href="/create-event">Create Event</Link>
                         </Button>
                     </motion.div>

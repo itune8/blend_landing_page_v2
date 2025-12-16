@@ -2,7 +2,6 @@
 
 import { Navbar } from "@/components/Navbar"
 import { Hero } from "@/components/Hero"
-import { Footer } from "@/components/Footer"
 import { useTheme } from "./layout"
 
 export default function HomePage() {
@@ -11,9 +10,8 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-background overflow-x-hidden">
             <Navbar onThemeToggle={() => setIsDark(!isDark)} isDark={isDark} />
-            <main>
+            <main className="border-0">
                 <Hero />
-                <Footer />
             </main>
         </div>
     )
