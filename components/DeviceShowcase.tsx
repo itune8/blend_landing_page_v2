@@ -60,10 +60,6 @@ export function DeviceShowcase() {
         visible: {
             opacity: 1,
             y: 0,
-            transition: {
-                duration: 0.8,
-                ease: "easeOut",
-            },
         },
     }
 
@@ -96,8 +92,7 @@ export function DeviceShowcase() {
                     <motion.div
                         variants={deviceVariants}
                         className="relative group cursor-pointer"
-                        whileHover={{ scale: 1.05, z: 50 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{ scale: 1.05 }}
                     >
                         <Link href="/discover" className="block">
                             {/* iPad Frame */}
@@ -119,8 +114,7 @@ export function DeviceShowcase() {
                     <motion.div
                         variants={deviceVariants}
                         className="relative group cursor-pointer z-10"
-                        whileHover={{ scale: 1.05, z: 100 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{ scale: 1.05 }}
                     >
                         <Link href="/calendars" className="block">
                             {/* MacBook */}
@@ -146,8 +140,7 @@ export function DeviceShowcase() {
                     <motion.div
                         variants={deviceVariants}
                         className="relative group cursor-pointer"
-                        whileHover={{ scale: 1.05, z: 50 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{ scale: 1.05 }}
                     >
                         <Link href="/events" className="block">
                             {/* iPhone Frame */}
