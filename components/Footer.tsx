@@ -71,61 +71,74 @@ export function Footer() {
             transition={{ duration: 0.6 }}
         >
             <div className="max-w-4xl mx-auto px-4 text-sm text-muted-foreground">
-                {/* Main footer content */}
-                <div className="border-t border-border pt-8 pb-4 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 text-center md:text-left">
-                    {/* Left side - Logo and links */}
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 w-full md:w-auto">
-                        <Link
-                            href="/"
-                            className="py-2 hover:text-foreground transition-colors flex justify-center md:justify-start w-full md:w-auto hover:scale-[1.02] transform"
-                            aria-label="Blend Home"
-                        >
-                            <BlendWordmark />
-                        </Link>
+                {/* Mobile view - Simple What's Blend link */}
+                <div className="md:hidden border-t border-border py-6 flex justify-center">
+                    <Link
+                        href="/whats-blend"
+                        className="text-foreground hover:text-teal-400 transition-colors text-base font-medium"
+                    >
+                        {"What's Blend"}
+                    </Link>
+                </div>
 
-                        <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-1 w-full md:w-auto">
-                            {footerLinks.map((link) => (
-                                <Link
+                {/* Desktop view - Full footer content */}
+                <div className="hidden md:block">
+                    {/* Main footer content */}
+                    <div className="border-t border-border pt-8 pb-4 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 text-center md:text-left">
+                        {/* Left side - Logo and links */}
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 w-full md:w-auto">
+                            <Link
+                                href="/"
+                                className="py-2 hover:text-foreground transition-colors flex justify-center md:justify-start w-full md:w-auto hover:scale-[1.02] transform"
+                                aria-label="Blend Home"
+                            >
+                                <BlendWordmark />
+                            </Link>
+
+                            <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-1 w-full md:w-auto">
+                                {footerLinks.map((link) => (
+                                    <Link
+                                        key={link.label}
+                                        href={link.href}
+                                        className="px-2 py-2 hover:text-foreground transition-colors hover:-translate-y-0.5 transform"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Right side - Social icons */}
+                        <div className="flex items-center justify-center md:justify-end gap-1 w-full md:w-auto">
+                            {socialLinks.map((link) => (
+                                <motion.a
                                     key={link.label}
                                     href={link.href}
-                                    className="px-2 py-2 hover:text-foreground transition-colors hover:-translate-y-0.5 transform"
+                                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                                    rel={link.href.startsWith("http") ? "nofollow noopener" : undefined}
+                                    aria-label={link.label}
+                                    className="p-2.5 hover:text-foreground transition-colors"
+                                    whileHover={{ scale: 1.1, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
-                                    {link.label}
-                                </Link>
+                                    <link.icon />
+                                </motion.a>
                             ))}
                         </div>
                     </div>
 
-                    {/* Right side - Social icons */}
-                    <div className="flex items-center justify-center md:justify-end gap-1 w-full md:w-auto">
-                        {socialLinks.map((link) => (
-                            <motion.a
+                    {/* Secondary links */}
+                    <div className="py-2 flex justify-center md:justify-start text-xs flex-wrap gap-4 md:gap-1">
+                        {secondaryLinks.map((link) => (
+                            <Link
                                 key={link.label}
                                 href={link.href}
-                                target={link.href.startsWith("http") ? "_blank" : undefined}
-                                rel={link.href.startsWith("http") ? "nofollow noopener" : undefined}
-                                aria-label={link.label}
-                                className="p-2.5 hover:text-foreground transition-colors"
-                                whileHover={{ scale: 1.1, y: -2 }}
-                                whileTap={{ scale: 0.95 }}
+                                className="px-2 py-1 text-muted-foreground/70 hover:text-muted-foreground transition-colors hover:-translate-y-0.5 transform"
                             >
-                                <link.icon />
-                            </motion.a>
+                                {link.label}
+                            </Link>
                         ))}
                     </div>
-                </div>
-
-                {/* Secondary links */}
-                <div className="py-2 flex justify-center md:justify-start text-xs flex-wrap gap-4 md:gap-1">
-                    {secondaryLinks.map((link) => (
-                        <Link
-                            key={link.label}
-                            href={link.href}
-                            className="px-2 py-1 text-muted-foreground/70 hover:text-muted-foreground transition-colors hover:-translate-y-0.5 transform"
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
                 </div>
             </div>
         </motion.footer>

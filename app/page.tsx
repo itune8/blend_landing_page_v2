@@ -2,6 +2,7 @@
 
 import { Navbar } from "@/components/Navbar"
 import { Hero } from "@/components/Hero"
+import { Footer } from "@/components/Footer"
 import { useTheme } from "./layout"
 
 export default function HomePage() {
@@ -13,6 +14,7 @@ export default function HomePage() {
             <main className="border-0">
                 <Hero />
             </main>
+            <Footer />
         </div>
     )
 }
