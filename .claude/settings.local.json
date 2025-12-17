@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:docs.lu.ma)",
+      "WebFetch(domain:docs.luma.com)",
+      "WebFetch(domain:luma.com)",
+      "Bash(mkdir -p:*)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm install:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(npm run dev)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "WebFetch(domain:localhost)",
+      "Bash(PORT=3003 npm run dev:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(PORT=2008 npm start)"
+    ]
+  }
+}
